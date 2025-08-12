@@ -1,28 +1,17 @@
-tcc-fraude/
-│
-├── data/                  # Dados brutos e processados (não versionar os brutos grandes)
-│   ├── raw/                # Dados originais (ex.: train_transaction.csv)
-│   ├── interim/            # Dados intermediários após limpeza
-│   └── processed/          # Dados prontos para modelagem
-│
-├── notebooks/             # Jupyter Notebooks para experimentação
-│   ├── 01_exploracao.ipynb
-│   ├── 02_preprocessamento.ipynb
-│   ├── 03_modelagem.ipynb
-│   └── 04_avaliacao.ipynb
-│
-├── src/                   # Código fonte reutilizável (funções e scripts)
-│   ├── __init__.py
-│   ├── data_prep.py       # Funções de limpeza e transformação
-│   ├── features.py        # Feature engineering
-│   ├── models.py          # Treinamento e avaliação de modelos
-│   └── utils.py           # Funções auxiliares
-│
-├── reports/               # Documentos e resultados
-│   ├── figures/           # Gráficos e imagens para o TCC
-│   ├── tabelas/           # Tabelas geradas
-│   └── tcc_texto/         # Texto do trabalho (docx, LaTeX ou PDF)
-│
-├── requirements.txt       # Lista de dependências do Python
-├── README.md              # Descrição geral do projeto
-└── .gitignore             # Arquivos e pastas para ignorar no Git
+# PT
+## Dados
+
+Os arquivos de dados (CSV) não estão incluídos neste repositório devido ao tamanho.
+
+Para baixar os dados, acesse o link abaixo:
+
+[Link para download dos dados](https://www.kaggle.com/competitions/ieee-fraud-detection/data)
+
+# EN
+## Dados
+
+The data files (CSV) are not included in this repository due to their size.
+
+To download the data, please visit the link below:
+
+[Download data here](https://www.kaggle.com/competitions/ieee-fraud-detection/data)
