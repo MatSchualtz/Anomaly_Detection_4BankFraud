@@ -54,7 +54,7 @@ def df_summary_with_fraud(df, target_col, id_cols_slice):
 def low_importance_numerical(df, target_col, threshold=0.001, random_state=42):
     """
     Retorna lista de colunas numéricas de baixa importância usando RandomForest.
-    
+
     Parâmetros:
     df : pd.DataFrame
         Dataframe completo (contendo target)
@@ -66,34 +66,30 @@ def low_importance_numerical(df, target_col, threshold=0.001, random_state=42):
         Semente para reprodutibilidade
     """
     
-    X = df.select_dtypes(include=['int64', 'float64']).drop(columns=[target_col,'TransactionID'], errors='ignore')
+    X = df.select_dtypes(include=['int64', 'float64']).drop(columns=[target_col, 'TransactionID'], errors='ignore')
     y = df[target_col]
     X_filled = X.fillna(-999)
     model = RandomForestClassifier(n_estimators=100, random_state=random_state)
     model.fit(X_filled, y)
+    
+    # Importância das features
     importances = pd.Series(model.feature_importances_, index=X.columns)
     low_importance_cols = importances[importances < threshold].index.to_list()
-    
     importance_df = importances.sort_values(ascending=False).reset_index()
     importance_df.columns = ['Feature', 'Importance']
-    
-    # Gráfico Importancia acumulada
-    cumulative_importance = importance_df.cumsum(axis=0)
-    cumulative_importance["CleanFeature"] = cumulative_importance["Feature"].apply(lambda x: x.split("id_")[-1])
-    cumulative_importance["CleanFeature"] = "id_" + cumulative_importance["CleanFeature"]
-    cumulative_importance = cumulative_importance[['CleanFeature','Importance']]
-    cumulative_importance['contribution'] = cumulative_importance['Importance'] - cumulative_importance['Importance'].shift(1)
-    
-    plt.figure(figsize=(12,6))
-    plt.plot(cumulative_importance["CleanFeature"], cumulative_importance["Importance"], marker="o", color="steelblue")
+    importance_df['cumulative_importance'] = importance_df['Importance'].cumsum()
+    importance_df['contribution'] = importance_df['Importance']  # incremental contribution
 
-    plt.axhline(y=0.9, color="red", linestyle="--", label="90%")
+    # Gráfico da importância acumulada
+    plt.figure(figsize=(12,6))
+    plt.plot(importance_df['Feature'], importance_df['cumulative_importance'], marker='o', color='steelblue')
+    plt.axhline(y=0.9, color='red', linestyle='--', label='90% acumulado')
     plt.xticks(rotation=90)
-    plt.xlabel("Features (incrementais)")
+    plt.xlabel("Features")
     plt.ylabel("Importância Acumulada")
-    plt.title("Importância Acumulada das Features (incrementais)")
+    plt.title("Importância Acumulada das Features Numéricas")
     plt.legend()
     plt.tight_layout()
     plt.show()
     
-    return low_importance_cols, cumulative_importance
+    return low_importance_cols, importance_df
