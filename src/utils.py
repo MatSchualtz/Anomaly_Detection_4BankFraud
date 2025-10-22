@@ -93,3 +93,52 @@ def low_importance_numerical(df, target_col, threshold=0.001, random_state=42):
     plt.show()
     
     return low_importance_cols, importance_df
+
+
+def tab_freq(df, var1, var2):
+    """
+    Gera uma tabela de frequências combinando:
+    - Percentual total no dataset (pct_total)
+    - Frequência absoluta total (abs_total)
+    - Distribuição percentual dentro da categoria (pct_0 e pct_1)
+
+    Parâmetros:
+    df : pd.DataFrame
+        DataFrame contendo as variáveis de interesse.
+    var1 : str
+        Nome da variável categórica.
+    var2 : str
+        Nome da variável alvo (tipicamente binária).
+
+    Retorna:
+    tab_final : pd.DataFrame
+        DataFrame consolidado com as seguintes colunas:
+        - var1 : categorias da variável analisada
+        - pct_total : percentual que a categoria representa no dataset
+        - abs_total : frequência absoluta da categoria
+        - pct_0 : percentual de registros não-fraude (ou classe 0) dentro da categoria
+        - pct_1 : percentual de registros fraude (ou classe 1) dentro da categoria
+    """
+    
+    # Tabela percentual no dataset
+    tab_total = pd.crosstab(df[var1], df[var2], margins=True, normalize=True) * 100
+    tab_total.columns = ['pct_total_0', 'pct_total_1', 'pct_total']
+    tab_total.drop(columns=['pct_total_0', 'pct_total_1'], inplace=True)
+    tab_total.reset_index(inplace=True)
+
+    # Tabela absoluta
+    tab_total_abs = pd.crosstab(df[var1], df[var2], margins=True)
+    tab_total_abs.columns = ['abs_total_0', 'abs_total_1', 'abs_total']
+    tab_total_abs.drop(columns=['abs_total_0', 'abs_total_1'], inplace=True)
+    tab_total_abs.reset_index(inplace=True)
+
+    # Tabela percentual dentro da categoria
+    tab_within = pd.crosstab(df[var1], df[var2], normalize="index") * 100
+    tab_within.columns = ['pct_0', 'pct_1']
+    tab_within.reset_index(inplace=True)
+
+    # Merge final
+    tab_final = tab_total.merge(tab_total_abs, on=var1)
+    tab_final = tab_final.merge(tab_within, on=var1)
+
+    return tab_final
